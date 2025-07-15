@@ -8,7 +8,7 @@ import { ResultCard } from "./ResultCard";
 import QuizzSubmission from "./QuizzSubmission";
 
 type Answer = {
-  answersText: string;
+  answerText: string;
   isCorrect: boolean;
   id: number;
 };
@@ -23,22 +23,22 @@ const questions: Question[] = [
     questionText: "What is React?",
     answers: [
       {
-        answersText: "A JavaScript library for building user interfaces",
+        answerText: "A JavaScript library for building user interfaces",
         isCorrect: true,
         id: 1,
       },
       {
-        answersText: "A Frontend framework for building web applications",
+        answerText: "A Frontend framework for building web applications",
         isCorrect: false,
         id: 2,
       },
       {
-        answersText: "A back-end framework",
+        answerText: "A back-end framework",
         isCorrect: false,
         id: 3,
       },
       {
-        answersText: "A database",
+        answerText: "A database",
         isCorrect: false,
         id: 4,
       },
@@ -48,22 +48,22 @@ const questions: Question[] = [
     questionText: "What is the virtual DOM?",
     answers: [
       {
-        answersText: "A lightweight copy of the real DOM",
+        answerText: "A lightweight copy of the real DOM",
         isCorrect: true,
         id: 1,
       },
       {
-        answersText: "A way to store data in React",
+        answerText: "A way to store data in React",
         isCorrect: false,
         id: 2,
       },
       {
-        answersText: "A way to manage state in React",
+        answerText: "A way to manage state in React",
         isCorrect: false,
         id: 3,
       },
       {
-        answersText: "A way to handle events in React",
+        answerText: "A way to handle events in React",
         isCorrect: false,
         id: 4,
       },
@@ -73,23 +73,23 @@ const questions: Question[] = [
     questionText: "What is JSX?",
     answers: [
       {
-        answersText:
+        answerText:
           "A syntax extension for JavaScript that allows you to write HTML-like code in your JavaScript files",
         isCorrect: true,
         id: 1,
       },
       {
-        answersText: "A way to style React components",
+        answerText: "A way to style React components",
         isCorrect: false,
         id: 2,
       },
       {
-        answersText: "A way to manage state in React",
+        answerText: "A way to manage state in React",
         isCorrect: false,
         id: 3,
       },
       {
-        answersText: "A way to handle events in React",
+        answerText: "A way to handle events in React",
         isCorrect: false,
         id: 4,
       },
