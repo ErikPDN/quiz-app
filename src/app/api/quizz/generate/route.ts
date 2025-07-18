@@ -3,6 +3,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage } from "@langchain/core/messages";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
+import saveQuizz from "./saveToDb";
 
 interface Quiz {
   name: string;
@@ -41,7 +42,8 @@ export async function POST(req: NextRequest) {
     Instruções Importantes:
     1. Sua resposta DEVE SER APENAS o objeto JSON.
     2. Não inclua nenhum texto, explicação ou formatação markdown como \`\`\`json antes ou depois do JSON.
-    3. O objeto JSON deve ter a seguinte estrutura:
+    3. As answers devem ter 4 alternativas, com apenas 1 sendo correta
+    4. O objeto JSON deve ter a seguinte estrutura:
     {
       "name": "string",
       "description": "string",
@@ -81,12 +83,9 @@ export async function POST(req: NextRequest) {
     });
 
     const result = await runnable.invoke([message]);
-    console.log(result)
+    const { quizzId } = await saveQuizz(result)
 
-    return NextResponse.json({
-      message: "Quiz created successfully",
-      quiz: result,
-    }, { status: 200 });
+    return NextResponse.json({ quizzId }, { status: 200 })
 
   } catch (e: any) {
     console.error("Error processing quiz generation: ", e);
