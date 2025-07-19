@@ -6,104 +6,28 @@ import { ProgressBar } from "@/components/progressBar";
 import { ChevronLeft, X } from "lucide-react";
 import { ResultCard } from "./ResultCard";
 import QuizzSubmission from "./QuizzSubmission";
+import { InferSelectModel } from "drizzle-orm";
+import { questionAnswers, questions as DbQuestions, quizzes } from "@/db/schema";
+import { useRouter } from "next/navigation"
 
-type Answer = {
-  answerText: string;
-  isCorrect: boolean;
-  id: number;
-};
+type Props = {
+  quizz: Quizz
+}
 
-type Question = {
-  questionText: string;
-  answers: Answer[];
-};
+type Answer = InferSelectModel<typeof questionAnswers>;
+type Question = InferSelectModel<typeof DbQuestions> & { answers: Answer[] };
+type Quizz = InferSelectModel<typeof quizzes> & { questions: Question[] };
 
-const questions: Question[] = [
-  {
-    questionText: "What is React?",
-    answers: [
-      {
-        answerText: "A JavaScript library for building user interfaces",
-        isCorrect: true,
-        id: 1,
-      },
-      {
-        answerText: "A Frontend framework for building web applications",
-        isCorrect: false,
-        id: 2,
-      },
-      {
-        answerText: "A back-end framework",
-        isCorrect: false,
-        id: 3,
-      },
-      {
-        answerText: "A database",
-        isCorrect: false,
-        id: 4,
-      },
-    ],
-  },
-  {
-    questionText: "What is the virtual DOM?",
-    answers: [
-      {
-        answerText: "A lightweight copy of the real DOM",
-        isCorrect: true,
-        id: 1,
-      },
-      {
-        answerText: "A way to store data in React",
-        isCorrect: false,
-        id: 2,
-      },
-      {
-        answerText: "A way to manage state in React",
-        isCorrect: false,
-        id: 3,
-      },
-      {
-        answerText: "A way to handle events in React",
-        isCorrect: false,
-        id: 4,
-      },
-    ],
-  },
-  {
-    questionText: "What is JSX?",
-    answers: [
-      {
-        answerText:
-          "A syntax extension for JavaScript that allows you to write HTML-like code in your JavaScript files",
-        isCorrect: true,
-        id: 1,
-      },
-      {
-        answerText: "A way to style React components",
-        isCorrect: false,
-        id: 2,
-      },
-      {
-        answerText: "A way to manage state in React",
-        isCorrect: false,
-        id: 3,
-      },
-      {
-        answerText: "A way to handle events in React",
-        isCorrect: false,
-        id: 4,
-      },
-    ],
-  },
-];
+export default function QuizzQuestions(props: Props) {
+  const { questions } = props.quizz
 
-export default function QuizPage() {
   const [started, setStarted] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [userAnswers, setUserAnswers] = useState<{ questionId: number; answerId: number }[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false)
+  const router = useRouter()
 
   const handleNext = () => {
     if (!started) {
@@ -117,12 +41,15 @@ export default function QuizPage() {
       return
     }
 
-    setSelectedAnswer(null);
     setIsCorrect(null);
   };
 
-  const handleAnswer = (answer: Answer) => {
-    setSelectedAnswer(answer.id);
+  const handleAnswer = (answer: Answer, questionId: number) => {
+    const setUserAnswersArr = [...userAnswers, {
+      answerId: answer.id,
+      questionId
+    }]
+    setUserAnswers(setUserAnswersArr)
 
     const isCurrCorrect = answer.isCorrect;
     if (isCurrCorrect) {
@@ -132,11 +59,22 @@ export default function QuizPage() {
     setIsCorrect(isCurrCorrect);
   };
 
+  const handlePressPrev = () => {
+    if (currentQuestion !== 0) {
+      setCurrentQuestion(prevCurrQuestion => prevCurrQuestion - 1)
+    }
+  }
+
+  const handlePressExit = () => {
+    router.push(`/quizz/${props.quizz.id}`)
+  }
+
   const progress = started
-    ? ((currentQuestion + 1) / questions.length) * 100
+    ? ((currentQuestion) / questions.length) * 100
     : 0;
 
   const scorePercentage = Math.round((score / questions.length) * 100)
+  const selectedAnswer: number | null | undefined = userAnswers.find(item => item.questionId === questions[currentQuestion].id)?.answerId
 
   if (submitted) {
     return (
@@ -152,7 +90,7 @@ export default function QuizPage() {
     <div className="flex flex-col flex-1">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full shadow-sm">
         <header className="grid grid-cols-[auto_1fr_auto] items-center gap-4 p-4">
-          <Button size="icon" variant="outline">
+          <Button onClick={handlePressPrev} size="icon" variant="outline">
             <ChevronLeft />
           </Button>
 
@@ -160,7 +98,7 @@ export default function QuizPage() {
             {started && <ProgressBar value={progress} />}
           </div>
 
-          <Button size="icon" variant="outline">
+          <Button onClick={handlePressExit} size="icon" variant="outline">
             <X />
           </Button>
         </header>
@@ -185,7 +123,7 @@ export default function QuizPage() {
                       key={answer.id}
                       variant={variant}
                       size={"xl"}
-                      onClick={() => handleAnswer(answer)}
+                      onClick={() => handleAnswer(answer, questions[currentQuestion].id)}
                     >
                       <p>
                         {answer.answerText}
@@ -197,7 +135,7 @@ export default function QuizPage() {
             </div>
             <ResultCard
               isCorrect={isCorrect}
-              correctAnswer={questions[currentQuestion].answers.find(answer => answer.isCorrect === true)?.answerText ?? ''}
+              correctAnswer={questions[currentQuestion].answers.find(answer => answer.isCorrect === true)?.answerText || ""}
             />
           </div>
         )}
