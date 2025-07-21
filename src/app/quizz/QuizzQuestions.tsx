@@ -17,10 +17,8 @@ type Props = {
 type Answer = InferSelectModel<typeof questionAnswers>;
 type Question = InferSelectModel<typeof DbQuestions> & { answers: Answer[] };
 type Quizz = InferSelectModel<typeof quizzes> & { questions: Question[] };
-
 export default function QuizzQuestions(props: Props) {
   const { questions } = props.quizz
-
   const [started, setStarted] = useState<boolean>(false);
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [score, setScore] = useState(0);
@@ -90,25 +88,28 @@ export default function QuizzQuestions(props: Props) {
     <div className="flex flex-col flex-1">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full shadow-sm">
         <header className="grid grid-cols-[auto_1fr_auto] items-center gap-4 p-4">
-          <Button onClick={handlePressPrev} size="icon" variant="outline">
-            <ChevronLeft />
-          </Button>
+          {started && (
+            <>
+              <Button onClick={handlePressPrev} size="icon" variant="outline">
+                <ChevronLeft />
+              </Button>
 
-          <div className="w-full">
-            {started && <ProgressBar value={progress} />}
-          </div>
+              <div className="w-full">
+                <ProgressBar value={progress} />
+              </div>
 
-          <Button onClick={handlePressExit} size="icon" variant="outline">
-            <X />
-          </Button>
+              <Button onClick={handlePressExit} size="icon" variant="outline">
+                <X />
+              </Button>
+            </>
+          )}
         </header>
       </div>
       <main className="flex flex-1 justify-center p-4">
-        {!started ? (
-          <div className="flex flex-col items-center justify-center text-center">
-            <h1 className="text-3xl font-bold">Welcome to the quizz!</h1>
-            <p className="text-muted-foreground mt-2">Test your knowledge.</p>
-          </div>
+        {!started ? (<div className="flex flex-col items-center justify-center text-center">
+          <h1 className="text-3xl font-bold">Welcome to the quizz!</h1>
+          <p className="text-muted-foreground mt-2">Test your knowledge.</p>
+        </div>
         ) : (
           <div className="w-full max-w-2xl">
             <h2 className="text-2xl font-bold text-center">

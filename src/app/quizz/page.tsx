@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ProgressBar } from "@/components/progressBar";
-import { ChevronLeft, X } from "lucide-react";
+import { ProgressBar } from "@/components/progressBar"; import { ChevronLeft, X } from "lucide-react";
 import { ResultCard } from "./ResultCard";
 import QuizzSubmission from "./QuizzSubmission";
 
@@ -133,7 +132,7 @@ export default function QuizPage() {
   };
 
   const progress = started
-    ? ((currentQuestion + 1) / questions.length) * 100
+    ? ((currentQuestion) / questions.length) * 100
     : 0;
 
   const scorePercentage = Math.round((score / questions.length) * 100)
@@ -152,17 +151,21 @@ export default function QuizPage() {
     <div className="flex flex-col flex-1">
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 w-full shadow-sm">
         <header className="grid grid-cols-[auto_1fr_auto] items-center gap-4 p-4">
-          <Button size="icon" variant="outline">
-            <ChevronLeft />
-          </Button>
+          {started && (
+            <>
+              <Button size="icon" variant="outline">
+                <ChevronLeft />
+              </Button>
 
-          <div className="w-full">
-            {started && <ProgressBar value={progress} />}
-          </div>
+              <div className="w-full">
+                {started && <ProgressBar value={progress} />}
+              </div>
 
-          <Button size="icon" variant="outline">
-            <X />
-          </Button>
+              <Button size="icon" variant="outline">
+                <X />
+              </Button>
+            </>
+          )}
         </header>
       </div>
       <main className="flex flex-1 justify-center p-4">
