@@ -30,7 +30,7 @@ export const Header = async () => {
   const session = await auth()
   return (
     <header className="bg-black/80 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50">
-      <div className="container mx-auto">
+      <div className="mx-auto px-4">
         <nav className="flex h-16 items-center justify-between">
           {/* Logo Section */}
           <Link

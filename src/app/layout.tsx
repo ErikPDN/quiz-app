@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react"
+import { Header } from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,10 @@ export default function RootLayout({
             enableSystem={true}
             disableTransitionOnChange
           >
-            {children}
+            <Header />
+            <main className="min-h-screen">
+              {children}
+            </main>
           </ThemeProvider>
         </body>
       </SessionProvider>

@@ -64,7 +64,7 @@ export default function QuizzQuestions(props: Props) {
   }
 
   const handlePressExit = () => {
-    router.push(`/quizz/${props.quizz.id}`)
+    router.push(`/quizz`)
   }
 
   const progress = started
