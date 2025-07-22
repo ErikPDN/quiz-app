@@ -9,6 +9,7 @@ import QuizzSubmission from "./QuizzSubmission";
 import { InferSelectModel } from "drizzle-orm";
 import { questionAnswers, questions as DbQuestions, quizzes } from "@/db/schema";
 import { useRouter } from "next/navigation"
+import { saveSubmission } from "../actions/saveSubmissions"
 
 type Props = {
   quizz: Quizz
@@ -27,7 +28,7 @@ export default function QuizzQuestions(props: Props) {
   const [submitted, setSubmitted] = useState<boolean>(false)
   const router = useRouter()
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!started) {
       setStarted(true);
       return;
@@ -35,6 +36,7 @@ export default function QuizzQuestions(props: Props) {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      await handleSubmit()
       setSubmitted(true)
       return
     }
@@ -56,6 +58,19 @@ export default function QuizzQuestions(props: Props) {
 
     setIsCorrect(isCurrCorrect);
   };
+
+  const handleSubmit = async () => {
+    try {
+      const subId = await saveSubmission({
+        score: score,
+        quizzId: props.quizz.id
+      })
+    } catch (e) {
+      console.log(e)
+    }
+
+    setSubmitted(true)
+  }
 
   const handlePressPrev = () => {
     if (currentQuestion !== 0) {

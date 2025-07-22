@@ -64,6 +64,19 @@ export const questionAnswers = pgTable("answers", {
   isCorrect: boolean("is_correct"),
 });
 
+export const quizzSubmissions = pgTable("quizz_subimissions", {
+  id: serial("id").primaryKey(),
+  quizzId: integer("quizz_id"),
+  score: integer("score")
+})
+
+export const quizzSubmissionsRelations = relations(quizzSubmissions, ({ one, many }) => ({
+  quizz: one(quizzes, {
+    fields: [quizzSubmissions.quizzId],
+    references: [quizzes.id],
+  })
+}))
+
 export const usersRelations = relations(users, ({ many }) => ({
   quizzes: many(quizzes),
   accounts: many(accounts),
@@ -72,6 +85,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
   user: one(users, { fields: [quizzes.userId], references: [users.id] }),
   questions: many(questions),
+  submissions: many(quizzSubmissions)
 }));
 
 export const questionsRelations = relations(questions, ({ one, many }) => ({
