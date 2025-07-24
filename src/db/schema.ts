@@ -67,7 +67,8 @@ export const questionAnswers = pgTable("answers", {
 export const quizzSubmissions = pgTable("quizz_subimissions", {
   id: serial("id").primaryKey(),
   quizzId: integer("quizz_id"),
-  score: integer("score")
+  score: integer("score"),
+  createdAt: timestamp("created_at").defaultNow().notNull()
 })
 
 export const quizzSubmissionsRelations = relations(quizzSubmissions, ({ one, many }) => ({

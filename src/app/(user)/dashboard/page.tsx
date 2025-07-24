@@ -5,6 +5,8 @@ import { auth } from "@/auth"
 import { QuizzesTable, Quizz } from "./quizzesTable"
 import { getUserMetrics } from "../../actions/getUserMetrics"
 import { MetricCard } from "./metricCard"
+import { getHeatMapData } from "@/app/actions/getHeatMapData"
+import SubmissionsHeatMap from "./heatMap"
 
 const Page = async () => {
   const session = await auth()
@@ -21,6 +23,8 @@ const Page = async () => {
     }),
   ])
 
+  const heatMapData = await getHeatMapData()
+
   return (
     <div className="mt-6">
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">
@@ -36,6 +40,12 @@ const Page = async () => {
               value={metric.value}
             />
           ))}
+      </div>
+
+      <div>
+        {
+          heatMapData ? <SubmissionsHeatMap data={heatMapData} /> : null
+        }
       </div>
 
       <QuizzesTable quizzes={userQuizzes as Quizz[]} />

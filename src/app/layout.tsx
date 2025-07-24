@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Quizz Ai",
+  title: "QuizzMaster",
   description: "Generate Quizzes And Study Faster Using AI",
 };
 
