@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/progressBar";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft, X, Loader2 } from "lucide-react";
 import { ResultCard } from "./ResultCard";
 import QuizzSubmission from "./QuizzSubmission";
 import { InferSelectModel } from "drizzle-orm";
@@ -18,6 +18,7 @@ type Props = {
 type Answer = InferSelectModel<typeof questionAnswers>;
 type Question = InferSelectModel<typeof DbQuestions> & { answers: Answer[] };
 type Quizz = InferSelectModel<typeof quizzes> & { questions: Question[] };
+
 export default function QuizzQuestions(props: Props) {
   const { questions } = props.quizz
   const [started, setStarted] = useState<boolean>(false);
@@ -26,6 +27,7 @@ export default function QuizzQuestions(props: Props) {
   const [userAnswers, setUserAnswers] = useState<{ questionId: number; answerId: number }[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false)
+  const [submissionLoading, setSubmissionLoading] = useState<boolean>(false); // NOVO STATE PARA O LOADING
   const router = useRouter()
 
   const handleNext = async () => {
@@ -37,7 +39,6 @@ export default function QuizzQuestions(props: Props) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       await handleSubmit()
-      setSubmitted(true)
       return
     }
 
@@ -60,16 +61,18 @@ export default function QuizzQuestions(props: Props) {
   };
 
   const handleSubmit = async () => {
+    setSubmissionLoading(true); // INICIA O LOADING
     try {
       const subId = await saveSubmission({
         score: score,
         quizzId: props.quizz.id
       })
+      setSubmitted(true)
     } catch (e) {
-      console.log(e)
+      console.error("Error saving quiz submission:", e)
+    } finally {
+      setSubmissionLoading(false);
     }
-
-    setSubmitted(true)
   }
 
   const handlePressPrev = () => {
@@ -121,10 +124,11 @@ export default function QuizzQuestions(props: Props) {
         </header>
       </div>
       <main className="flex flex-1 justify-center p-4">
-        {!started ? (<div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold">Welcome to the quizz!</h1>
-          <p className="text-muted-foreground mt-2">Test your knowledge.</p>
-        </div>
+        {!started ? (
+          <div className="flex flex-col items-center justify-center text-center">
+            <h1 className="text-3xl font-bold">Welcome to the quizz!</h1>
+            <p className="text-muted-foreground mt-2">Test your knowledge.</p>
+          </div>
         ) : (
           <div className="w-full max-w-2xl">
             <h2 className="text-2xl font-bold text-center">
@@ -158,8 +162,23 @@ export default function QuizzQuestions(props: Props) {
       </main>
       <footer className="flex justify-center p-10">
         <div className="w-full max-w-sm">
-          <Button variant="neo" onClick={handleNext} size="lg" className="w-full">
-            {!started ? "Start" : (currentQuestion === questions.length - 1) ? "Submit" : "Next"}
+          <Button
+            variant="neo"
+            onClick={handleNext}
+            size="lg"
+            className="w-full"
+            disabled={submissionLoading}
+          >
+            {
+              submissionLoading && (currentQuestion === questions.length - 1) ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                !started ? "Start" : (currentQuestion === questions.length - 1) ? "Submit" : "Next"
+              )
+            }
           </Button>
         </div>
       </footer>

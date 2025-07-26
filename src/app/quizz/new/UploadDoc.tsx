@@ -58,7 +58,9 @@ export const UploadDoc = () => {
             />
           </label>
           {error ? <p className="text-red-500">{error}</p> : null}
-          <Button size="lg" className="mt-2" type="submit">Generate Quizz</Button>
+          <div className="flex justify-center mt-5">
+            <Button size="lg" className="mt-2" type="submit">Generate Quizz</Button>
+          </div>
         </form>
       }
     </div>

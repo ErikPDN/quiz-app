@@ -7,6 +7,8 @@ import { getUserMetrics } from "../../actions/getUserMetrics"
 import { MetricCard } from "./metricCard"
 import { getHeatMapData } from "@/app/actions/getHeatMapData"
 import SubmissionsHeatMap from "./heatMap"
+import { SubscribeBtn } from "../billing/SubscribeBtn"
+import { PRICE_ID } from "@/lib/utils"
 
 const Page = async () => {
   const session = await auth()
@@ -47,8 +49,8 @@ const Page = async () => {
           heatMapData ? <SubmissionsHeatMap data={heatMapData} /> : null
         }
       </div>
-
       <QuizzesTable quizzes={userQuizzes as Quizz[]} />
+      <SubscribeBtn price={PRICE_ID} userId={userId} />
     </div>
   )
 }
